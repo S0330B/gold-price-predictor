@@ -51,7 +51,7 @@ if st.checkbox("Convert to NPR"):
         return prediction * npr_rate
 
     npr_amount = convert_usd_to_npr(prediction)
-    st.success(f"${prediction[0]:.2f} = Rs. {npr_amount[0]:,.2f}")
+    st.success(f"Rs. {npr_amount[0]:,.2f}")
 
 # Predicted vs Actual chart
 if st.checkbox("Show Predicted vs Actual Gold Prices"):
