@@ -69,8 +69,8 @@ if st.checkbox("Convert to NPR"):
     for char in stream_conversion_text(npr_rate):
         stream_text += char
         placeholder.text(stream_text)
-# Show converted amount normally
-st.success(f"Rs. {npr_amount:,.2f}")
+    # Show converted amount normally
+    st.success(f"Rs. {npr_amount:,.2f}")
 
 # Predicted vs Actual chart
 if st.checkbox("Show Predicted vs Actual Gold Prices"):
