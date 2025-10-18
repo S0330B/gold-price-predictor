@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
 import requests
+import time
 
 # Load trained model
 model = joblib.load('models/GoldPricePredictor.joblib')
@@ -39,19 +40,37 @@ if st.button("Predict Gold Price"):
 
 # Convert the predicted amount to NPR
 if st.checkbox("Convert to NPR"):
+    # Predict USD amount
     input_df = pd.DataFrame([[spx, uso, slv, eur_usd]],
                             columns=['SPX','USO','SLV','EUR/USD'])
     prediction = model.predict(input_df)
-    def convert_usd_to_npr(prediction):
+
+    # Convert USD to NPR
+    def convert_usd_to_npr(usd_amount):
         app_id = "3f6dfe0891594de3803b522f7dc1db58"
         url = f"https://openexchangerates.org/api/latest.json?app_id={app_id}&base=USD"
         response = requests.get(url)
         data = response.json()
         npr_rate = data['rates']['NPR']
-        return prediction * npr_rate
+        return usd_amount * npr_rate, npr_rate
 
-    npr_amount = convert_usd_to_npr(prediction)
-    st.success(f"Rs. {npr_amount[0]:,.2f}")
+    npr_amount, npr_rate = convert_usd_to_npr(prediction[0])
+
+
+    # Stream only the conversion rate
+    def stream_conversion_text(npr_rate):
+        text = f"Conversion rate according to open exchange rates org: 1 USD = {npr_rate:.2f} NPR"
+        for char in text:
+            yield char
+            time.sleep(0.03)
+
+    placeholder = st.empty()
+    stream_text = ""
+    for char in stream_conversion_text(npr_rate):
+        stream_text += char
+        placeholder.text(stream_text)
+# Show converted amount normally
+st.success(f"Rs. {npr_amount:,.2f}")
 
 # Predicted vs Actual chart
 if st.checkbox("Show Predicted vs Actual Gold Prices"):
